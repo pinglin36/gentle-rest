@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gentle Rest - 溫柔的休息</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: #D7E2E8;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 60px 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2em;
+            color: #4a5568;
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+
+        #message-display {
+            min-height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            margin: 40px 0;
+            background: #f7fafc;
+            border-radius: 15px;
+        }
+
+        #message-text {
+            font-size: 1.3em;
+            line-height: 1.8;
+            color: #2d3748;
+            font-weight: 300;
+        }
+
+        /* Chinese text styling */
+        .chinese {
+            font-family: 'Microsoft YaHei', 'PingFang SC', 'SimHei', sans-serif;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 15px 35px;
+            font-size: 1em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        #new-message-btn {
+            background: #EAE7E2;
+            color: #4a5568;
+        }
+
+        #new-message-btn:hover {
+            background: #ddd8d0;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(234, 231, 226, 0.5);
+        }
+
+        #language-toggle {
+            background: #B9CBD9;
+            color: #4a5568;
+        }
+
+        #language-toggle:hover {
+            background: #a7bccf;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(185, 203, 217, 0.5);
+        }
+
+        .footer {
+            margin-top: 40px;
+            color: #a0aec0;
+            font-size: 0.9em;
+        }
+
+        /* Fade in animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="title">Gentle Rest</h1>
+
+        <div id="message-display">
+            <p id="message-text">Click below to receive a gentle message</p>
+        </div>
+
+        <div class="button-group">
+            <button id="new-message-btn">New Message</button>
+            <button id="language-toggle">切換中文 / Switch to English</button>
+        </div>
+
+        <p class="footer">For anyone who needs a gentle pause 💙</p>
+    </div>
+
+    <script>
+        // ========== CONTEXT-FREE GRAMMAR ENGINE ==========
+        
+        class Grammar {
+            constructor(rules) {
+                this.rules = rules;
+            }
+
+            // Generate text from a symbol
+            generate(symbol) {
+                // If this symbol has rules, pick one randomly
+                if (this.rules[symbol]) {
+                    const options = this.rules[symbol];
+                    const chosen = options[Math.floor(Math.random() * options.length)];
+                    
+                    // Expand all parts of the chosen rule
+                    return chosen.split(' ').map(part => {
+                        // If it's a symbol (starts with <), expand it
+                        if (part.startsWith('<') && part.endsWith('>')) {
+                            return this.generate(part);
+                        }
+                        // Otherwise it's regular text
+                        return part;
+                    }).join(' ');
+                }
+                
+                // If no rules, return the symbol as-is (shouldn't happen)
+                return symbol;
+            }
+
+            // Generate a complete message
+            generateMessage() {
+                return this.generate('<start>');
+            }
+        }
+
+        // ========== ENGLISH GRAMMAR ==========
+        
+        const englishGrammar = new Grammar({
+            '<start>': [
+                '<validation> <permission>',
+                '<validation> <rest>',
+                '<permission> <rest>',
+                '<validation> <permission> <rest>',
+                '<you> <permission>',
+                '<you> <rest>',
+            ],
+            
+            '<validation>': [
+                'You are doing enough today.',
+                'Some days are harder than others.',
+                'Your efforts matter, even when invisible.',
+                'Caregiving is profound work.',
+                'What you do is important.',
+                'You are allowed to feel tired.',
+                'Your feelings are valid.',
+                'This work takes so much from you.',
+            ],
+            
+            '<permission>': [
+                'It is okay to rest.',
+                'You can pause without guilt.',
+                'Taking a break is not selfish.',
+                'You are allowed to say no sometimes.',
+                'Rest is not weakness.',
+                'You deserve gentleness too.',
+                'It is okay to ask for help.',
+                'You do not have to be perfect.',
+            ],
+            
+            '<rest>': [
+                'Rest is part of the work.',
+                'Small pauses count as care.',
+                'Even five minutes matters.',
+                'Rest helps you continue.',
+                'Resting is not giving up.',
+                'You can care for yourself while caring for others.',
+                'Tomorrow you can try again.',
+                'This moment of rest is yours.',
+            ],
+            
+            '<you>': [
+                'You are seen.',
+                'You are not alone in this.',
+                'You are doing your best.',
+                'You matter.',
+                'You are worthy of care.',
+                'You are enough.',
+            ]
+        });
+
+        // ========== CHINESE GRAMMAR ==========
+        
+        const chineseGrammar = new Grammar({
+            '<start>': [
+                '<validation> <permission>',
+                '<validation> <rest>',
+                '<permission> <rest>',
+                '<validation> <permission> <rest>',
+                '<you> <permission>',
+                '<you> <rest>',
+            ],
+            
+            '<validation>': [
+                '今天的你已經很努力了。',
+                '有些日子就是比較難。',
+                '你的付出很重要，即使沒有人看見。',
+                '照顧是很深刻的工作。',
+                '你做的事情很有意義。',
+                '累了是正常的。',
+                '你的感受是真實的。',
+                '這份工作真的很辛苦。',
+            ],
+            
+            '<permission>': [
+                '休息是可以的。',
+                '暫停不需要感到愧疚。',
+                '休息不是自私。',
+                '你可以偶爾說不。',
+                '休息不是軟弱。',
+                '你也值得被溫柔對待。',
+                '尋求幫助是可以的。',
+                '你不需要完美。',
+            ],
+            
+            '<rest>': [
+                '休息也是照顧的一部分。',
+                '小小的暫停也算是照顧自己。',
+                '就算只有五分鐘也很重要。',
+                '休息讓你可以繼續下去。',
+                '休息不是放棄。',
+                '你可以在照顧別人的同時照顧自己。',
+                '明天可以再試試看。',
+                '這個休息的時刻屬於你。',
+            ],
+            
+            '<you>': [
+                '有人看見你的付出。',
+                '你不是一個人。',
+                '你已經盡力了。',
+                '你很重要。',
+                '你值得被照顧。',
+                '你就是夠好的。',
+            ]
+        });
+
+        // ========== APPLICATION STATE ==========
+        
+        let currentLanguage = 'english'; // or 'chinese'
+        let currentGrammar = englishGrammar;
+
+        // ========== DOM ELEMENTS ==========
+        
+        const messageText = document.getElementById('message-text');
+        const newMessageBtn = document.getElementById('new-message-btn');
+        const languageToggle = document.getElementById('language-toggle');
+        const title = document.getElementById('title');
+        const messageDisplay = document.getElementById('message-display');
+
+        // ========== FUNCTIONS ==========
+        
+        function displayMessage() {
+            // Generate new message
+            const message = currentGrammar.generateMessage();
+            
+            // Add fade-in animation
+            messageDisplay.classList.remove('fade-in');
+            void messageDisplay.offsetWidth; // Trigger reflow
+            messageDisplay.classList.add('fade-in');
+            
+            // Update text and language class
+            messageText.textContent = message;
+            if (currentLanguage === 'chinese') {
+                messageText.classList.add('chinese');
+            } else {
+                messageText.classList.remove('chinese');
+            }
+        }
+
+        function toggleLanguage() {
+            if (currentLanguage === 'english') {
+                // Switch to Chinese
+                currentLanguage = 'chinese';
+                currentGrammar = chineseGrammar;
+                languageToggle.textContent = 'Switch to English';
+            } else {
+                // Switch to English
+                currentLanguage = 'english';
+                currentGrammar = englishGrammar;
+                languageToggle.textContent = '切換中文';
+            }
+            
+            // Generate a new message in the new language
+            displayMessage();
+        }
+
+        // ========== EVENT LISTENERS ==========
+        
+        newMessageBtn.addEventListener('click', displayMessage);
+        languageToggle.addEventListener('click', toggleLanguage);
+
+        // Optional: Generate first message on load
+        // displayMessage();
+    </script>
+</body>
+</html>
