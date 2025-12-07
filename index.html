@@ -22,7 +22,7 @@
         overflow: hidden;
       }
 
-      /* Language Toggle in Corner */
+      /* Language Toggle */
       .language-toggle {
         position: fixed;
         top: 30px;
@@ -38,28 +38,114 @@
         color: #4a5568;
       }
 
-      /* Main Container */
-      .scene {
+      /* Title */
+      h1 {
+        position: fixed;
+        top: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 2.2em;
+        color: #4a5568;
+        font-weight: 300;
+        text-align: center;
+      }
+
+      /* Instructions */
+      .instructions {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: #8a9ba8;
+        font-size: 0.9em;
+        text-align: center;
+        opacity: 0.7;
+      }
+
+      /* Container for carousel */
+      .carousel-container {
         position: relative;
         width: 100%;
-        max-width: 600px;
-        height: 500px;
+        max-width: 900px;
+        height: 450px;
         display: flex;
         justify-content: center;
         align-items: center;
+        perspective: 1200px;
       }
 
-      /* Envelope - bigger */
+      /* Envelope carousel wrapper */
+      .envelope-carousel {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Individual envelope card */
+      .envelope-card {
+        position: absolute;
+        width: 420px;
+        height: 280px;
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        transform-style: preserve-3d;
+      }
+
+      /* Center envelope - largest and in focus */
+      .envelope-card.center {
+        transform: translateX(0) scale(1.1) rotateY(0deg);
+        z-index: 10;
+        opacity: 1;
+      }
+
+      /* Left envelope */
+      .envelope-card.left {
+        transform: translateX(-380px) scale(0.85) rotateY(25deg);
+        z-index: 5;
+        opacity: 0.6;
+      }
+
+      /* Right envelope */
+      .envelope-card.right {
+        transform: translateX(380px) scale(0.85) rotateY(-25deg);
+        z-index: 5;
+        opacity: 0.6;
+      }
+
+      /* Far left */
+      .envelope-card.far-left {
+        transform: translateX(-650px) scale(0.6) rotateY(35deg);
+        z-index: 1;
+        opacity: 0.3;
+      }
+
+      /* Far right */
+      .envelope-card.far-right {
+        transform: translateX(650px) scale(0.6) rotateY(-35deg);
+        z-index: 1;
+        opacity: 0.3;
+      }
+
+      /* Hidden */
+      .envelope-card.hidden {
+        transform: translateX(0) scale(0.3);
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* Envelope styling */
       .envelope {
         position: relative;
-        width: 520px;
-        height: 320px;
-        cursor: pointer;
+        width: 100%;
+        height: 100%;
         transition: transform 0.3s ease;
       }
 
       .envelope:hover {
-        transform: scale(1.02);
+        transform: scale(1.05);
       }
 
       .envelope-body {
@@ -73,7 +159,6 @@
         z-index: 1;
       }
 
-      /* Envelope Flap */
       .envelope-flap {
         position: absolute;
         top: 0;
@@ -93,20 +178,19 @@
         transform: rotateX(180deg);
       }
 
-      /* Wax Seal - Realistic with 3D pressed flower emboss */
+      /* Wax seal */
       .wax-seal {
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 75px;
-        height: 75px;
+        width: 65px;
+        height: 65px;
         border-radius: 50%;
         z-index: 20;
         cursor: pointer;
         transition: all 0.3s ease;
         
-        /* Realistic wax gradient - lighter at edges, darker in center */
         background: radial-gradient(
           circle at 35% 30%,
           #e87171 0%,
@@ -116,18 +200,12 @@
           #8b2525 100%
         );
         
-        /* Multiple shadows for 3D depth */
         box-shadow: 
-          /* Outer drop shadow */
           0 5px 12px rgba(100, 30, 30, 0.5),
-          /* Inner pressed shadow (top) */
           inset 0 -3px 6px rgba(0, 0, 0, 0.35),
-          /* Inner highlight (bottom) */
           inset 0 3px 4px rgba(255, 255, 255, 0.2),
-          /* Subtle outer glow */
           0 0 25px rgba(201, 69, 69, 0.25);
         
-        /* Subtle texture overlay */
         background-image: 
           radial-gradient(
             circle at 35% 30%,
@@ -137,7 +215,6 @@
             #a83232 75%,
             #8b2525 100%
           ),
-          /* Fine texture pattern */
           repeating-radial-gradient(
             circle at 50% 50%,
             transparent 0,
@@ -148,7 +225,7 @@
       }
 
       .wax-seal:hover {
-        transform: translate(-50%, -50%) scale(1.08);
+        transform: translate(-50%, -50%) scale(1.1);
         box-shadow: 
           0 7px 16px rgba(100, 30, 30, 0.6),
           inset 0 -3px 6px rgba(0, 0, 0, 0.35),
@@ -156,15 +233,14 @@
           0 0 30px rgba(201, 69, 69, 0.35);
       }
 
-      /* Flower center - pressed down emboss effect */
       .wax-seal::before {
         content: '';
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 18px;
-        height: 18px;
+        width: 16px;
+        height: 16px;
         background: radial-gradient(
           circle,
           rgba(0, 0, 0, 0.3) 0%,
@@ -172,30 +248,23 @@
           transparent 100%
         );
         border-radius: 50%;
-        /* Pressed inward effect */
         box-shadow: 
           inset 0 2px 3px rgba(0, 0, 0, 0.5),
           inset 0 -1px 2px rgba(255, 100, 100, 0.2),
           0 1px 1px rgba(255, 255, 255, 0.1);
       }
 
-      /* Flower petals - carved/embossed pattern */
       .wax-seal::after {
         content: '✿';
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        /* Dark shadow for pressed-in look */
         color: rgba(0, 0, 0, 0.3);
-        font-size: 46px;
-        /* Embossed shadow effect */
+        font-size: 40px;
         text-shadow: 
-          /* Dark pressed shadow */
           0 2px 1px rgba(0, 0, 0, 0.3),
-          /* Light highlight on opposite side */
           0 -1px 0 rgba(255, 255, 255, 0.15),
-          /* Subtle glow */
           0 0 3px rgba(0, 0, 0, 0.2);
         z-index: 1;
       }
@@ -206,14 +275,14 @@
         transition: opacity 0.5s ease;
       }
 
-      /* Letter Inside */
+      /* Letter inside */
       .letter {
         position: absolute;
         top: 4%;
         left: 50%;
         transform: translate(-50%, 0);
         width: 92%;
-        height: 280px;
+        height: 250px;
         background: white;
         border: 1px solid #e8e8e8;
         border-radius: 3px;
@@ -224,7 +293,6 @@
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
         z-index: 50;
         cursor: pointer;
-
         display: flex;
         justify-content: center;
         align-items: center;
@@ -253,7 +321,7 @@
         }
       }
 
-      /* Canvas glitter overlay - NOW SIMPLE CSS SPARKLES */
+      /* Sparkles */
       .sparkles {
         position: absolute;
         inset: 0;
@@ -271,72 +339,22 @@
 
       .sparkle {
         position: absolute;
-        font-size: 20px;
+        font-size: 18px;
         opacity: 0;
         animation: twinkle 3s ease-in-out infinite;
         pointer-events: none;
       }
 
-      /* Position sparkles around the letter */
-      .sparkle:nth-child(1) {
-        top: 15%;
-        left: 10%;
-        animation-delay: 0s;
-      }
-
-      .sparkle:nth-child(2) {
-        top: 25%;
-        right: 15%;
-        animation-delay: 0.5s;
-      }
-
-      .sparkle:nth-child(3) {
-        top: 40%;
-        left: 20%;
-        animation-delay: 1s;
-      }
-
-      .sparkle:nth-child(4) {
-        top: 50%;
-        right: 10%;
-        animation-delay: 1.5s;
-      }
-
-      .sparkle:nth-child(5) {
-        top: 65%;
-        left: 15%;
-        animation-delay: 2s;
-      }
-
-      .sparkle:nth-child(6) {
-        top: 75%;
-        right: 20%;
-        animation-delay: 2.5s;
-      }
-
-      .sparkle:nth-child(7) {
-        top: 20%;
-        left: 50%;
-        animation-delay: 0.7s;
-      }
-
-      .sparkle:nth-child(8) {
-        top: 60%;
-        left: 50%;
-        animation-delay: 1.7s;
-      }
-
-      .sparkle:nth-child(9) {
-        top: 35%;
-        left: 80%;
-        animation-delay: 1.2s;
-      }
-
-      .sparkle:nth-child(10) {
-        top: 80%;
-        left: 40%;
-        animation-delay: 2.2s;
-      }
+      .sparkle:nth-child(1) { top: 15%; left: 10%; animation-delay: 0s; }
+      .sparkle:nth-child(2) { top: 25%; right: 15%; animation-delay: 0.5s; }
+      .sparkle:nth-child(3) { top: 40%; left: 20%; animation-delay: 1s; }
+      .sparkle:nth-child(4) { top: 50%; right: 10%; animation-delay: 1.5s; }
+      .sparkle:nth-child(5) { top: 65%; left: 15%; animation-delay: 2s; }
+      .sparkle:nth-child(6) { top: 75%; right: 20%; animation-delay: 2.5s; }
+      .sparkle:nth-child(7) { top: 20%; left: 50%; animation-delay: 0.7s; }
+      .sparkle:nth-child(8) { top: 60%; left: 50%; animation-delay: 1.7s; }
+      .sparkle:nth-child(9) { top: 35%; left: 80%; animation-delay: 1.2s; }
+      .sparkle:nth-child(10) { top: 80%; left: 40%; animation-delay: 2.2s; }
 
       @keyframes twinkle {
         0%, 100% {
@@ -356,7 +374,7 @@
 
       /* Message text */
       .message-text {
-        font-size: 1.2em;
+        font-size: 1.1em;
         line-height: 1.8;
         color: #2d3748;
         text-align: center;
@@ -364,7 +382,7 @@
         opacity: 0.3;
         transition: all 0.6s ease;
         cursor: pointer;
-        max-width: 420px;
+        max-width: 380px;
       }
 
       .letter.revealed .message-text {
@@ -376,28 +394,45 @@
         font-family: "Microsoft YaHei", "PingFang SC", "SimHei", sans-serif;
       }
 
-      /* Instructions */
-      .instructions {
-        position: fixed;
-        bottom: 30px;
-        left: 50%;
-        transform: translateX(-50%);
-        color: #8a9ba8;
-        font-size: 0.9em;
-        text-align: center;
-        opacity: 0.7;
+      /* Navigation arrows */
+      .nav-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 50px;
+        height: 50px;
+        background: rgba(255, 255, 255, 0.3);
+        border: 2px solid rgba(107, 124, 138, 0.3);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 100;
+        transition: all 0.3s ease;
+        font-size: 24px;
+        color: #6b7c8a;
+        user-select: none;
       }
 
-      /* Title */
-      h1 {
-        position: fixed;
-        top: 30px;
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: 2.2em;
-        color: #4a5568;
-        font-weight: 300;
-        text-align: center;
+      .nav-arrow:hover {
+        background: rgba(255, 255, 255, 0.5);
+        border-color: rgba(107, 124, 138, 0.5);
+        transform: translateY(-50%) scale(1.1);
+      }
+
+      .nav-arrow.left {
+        left: 20px;
+      }
+
+      .nav-arrow.right {
+        right: 20px;
+      }
+
+      /* Hide arrows when envelope is opened */
+      .carousel-container.envelope-opened .nav-arrow {
+        opacity: 0;
+        pointer-events: none;
       }
     </style>
   </head>
@@ -406,39 +441,19 @@
 
     <div class="language-toggle" id="languageToggle">切換中文</div>
 
-    <div class="scene">
-      <div class="envelope" id="envelope">
-        <div class="envelope-body"></div>
-        <div class="envelope-flap"></div>
-        <div class="wax-seal" id="waxSeal"></div>
+    <div class="carousel-container" id="carouselContainer">
+      <!-- Navigation arrows -->
+      <div class="nav-arrow left" id="prevBtn">‹</div>
+      <div class="nav-arrow right" id="nextBtn">›</div>
 
-        <div class="letter" id="letter">
-          <!-- Simple CSS sparkles instead of canvas -->
-          <div class="sparkles" id="sparkles">
-            <span class="sparkle">✨</span>
-            <span class="sparkle">✨</span>
-            <span class="sparkle">✨</span>
-            <span class="sparkle">✨</span>
-            <span class="sparkle">✨</span>
-            <span class="sparkle">✨</span>
-            <span class="sparkle">✨</span>
-            <span class="sparkle">✨</span>
-            <span class="sparkle">✨</span>
-            <span class="sparkle">✨</span>
-          </div>
-
-          <!-- text on top -->
-          <div class="glitter-wrapper">
-            <p class="message-text" id="messageText">
-              Click the wax seal to open
-            </p>
-          </div>
-        </div>
+      <!-- Envelope carousel -->
+      <div class="envelope-carousel" id="envelopeCarousel">
+        <!-- Envelopes will be generated here -->
       </div>
     </div>
 
     <div class="instructions" id="instructions">
-      Click the wax seal to open your letter
+      Swipe through envelopes and click the wax seal to open
     </div>
 
     <script>
@@ -450,8 +465,7 @@
         generate(symbol) {
           if (this.rules[symbol]) {
             const options = this.rules[symbol];
-            const chosen =
-              options[Math.floor(Math.random() * options.length)];
+            const chosen = options[Math.floor(Math.random() * options.length)];
             return chosen
               .split(" ")
               .map((part) => {
@@ -567,9 +581,6 @@
 
       let currentLanguage = "english";
       let currentGrammar = englishGrammar;
-      let isEnvelopeOpened = false;
-      
-      // Store the structure of current message for translation
       let currentMessageParts = {
         validation: null,
         permission: null,
@@ -577,29 +588,285 @@
         you: null
       };
 
-      const envelope = document.getElementById("envelope");
-      const waxSeal = document.getElementById("waxSeal");
-      const letter = document.getElementById("letter");
-      const messageText = document.getElementById("messageText");
       const languageToggle = document.getElementById("languageToggle");
       const instructions = document.getElementById("instructions");
+      const carouselContainer = document.getElementById("carouselContainer");
+      const envelopeCarousel = document.getElementById("envelopeCarousel");
+      const prevBtn = document.getElementById("prevBtn");
+      const nextBtn = document.getElementById("nextBtn");
 
-      // Timer variables - runs silently in background
+      // Carousel state
+      const NUM_ENVELOPES = 20;
+      let currentIndex = 10; // Start in middle
+      let envelopes = [];
+      let envelopeMessages = [];
+      let isEnvelopeOpened = false;
+
+      // Timer variables
       let nextLetterTime = null;
       let countdownInterval = null;
-      const FOUR_HOURS = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
+      const FOUR_HOURS = 4 * 60 * 60 * 1000;
 
-      // Initialize or get next letter time from localStorage
-      function initializeTimer() {
-        // If timer is already running, don't start again
-        if (countdownInterval !== null) {
-          return;
+      // Pre-generate random messages for each envelope
+      function generateEnvelopeMessages() {
+        for (let i = 0; i < NUM_ENVELOPES; i++) {
+          envelopeMessages.push({
+            english: generateRandomMessage(englishGrammar),
+            chinese: generateRandomMessage(chineseGrammar)
+          });
         }
+      }
+
+      function generateRandomMessage(grammar) {
+        const patterns = [
+          ['validation', 'permission'],
+          ['validation', 'rest'],
+          ['permission', 'rest'],
+          ['validation', 'permission', 'rest'],
+          ['you', 'permission'],
+          ['you', 'rest']
+        ];
+        const chosenPattern = patterns[Math.floor(Math.random() * patterns.length)];
+        
+        const parts = [];
+        for (let partType of chosenPattern) {
+          const options = grammar.rules['<' + partType + '>'];
+          const index = Math.floor(Math.random() * options.length);
+          parts.push(options[index]);
+        }
+        
+        return parts.join(' ');
+      }
+
+      // Create envelopes
+      function createEnvelopes() {
+        for (let i = 0; i < NUM_ENVELOPES; i++) {
+          const card = document.createElement('div');
+          card.className = 'envelope-card';
+          card.innerHTML = `
+            <div class="envelope" data-index="${i}">
+              <div class="envelope-body"></div>
+              <div class="envelope-flap"></div>
+              <div class="wax-seal"></div>
+              <div class="letter">
+                <div class="sparkles">
+                  <span class="sparkle">✨</span>
+                  <span class="sparkle">✨</span>
+                  <span class="sparkle">✨</span>
+                  <span class="sparkle">✨</span>
+                  <span class="sparkle">✨</span>
+                  <span class="sparkle">✨</span>
+                  <span class="sparkle">✨</span>
+                  <span class="sparkle">✨</span>
+                  <span class="sparkle">✨</span>
+                  <span class="sparkle">✨</span>
+                </div>
+                <div class="glitter-wrapper">
+                  <p class="message-text">Click the wax seal to open</p>
+                </div>
+              </div>
+            </div>
+          `;
+          
+          envelopeCarousel.appendChild(card);
+          envelopes.push(card);
+
+          // Add click event to wax seal
+          const waxSeal = card.querySelector('.wax-seal');
+          const envelope = card.querySelector('.envelope');
+          const letter = card.querySelector('.letter');
+          const messageText = card.querySelector('.message-text');
+          const sparkles = card.querySelector('.sparkles');
+
+          waxSeal.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (parseInt(envelope.dataset.index) === currentIndex) {
+              openEnvelope(envelope, letter, messageText, sparkles, i);
+            }
+          });
+
+          // Click text to reveal
+          messageText.addEventListener('click', (e) => {
+            e.stopPropagation();
+            letter.classList.add('revealed');
+            sparkles.classList.add('hidden');
+            initializeTimer();
+          });
+        }
+
+        updateCarousel();
+      }
+
+      function updateCarousel() {
+        envelopes.forEach((card, index) => {
+          const diff = index - currentIndex;
+          
+          card.classList.remove('center', 'left', 'right', 'far-left', 'far-right', 'hidden');
+          
+          if (diff === 0) {
+            card.classList.add('center');
+          } else if (diff === -1) {
+            card.classList.add('left');
+          } else if (diff === 1) {
+            card.classList.add('right');
+          } else if (diff === -2) {
+            card.classList.add('far-left');
+          } else if (diff === 2) {
+            card.classList.add('far-right');
+          } else {
+            card.classList.add('hidden');
+          }
+        });
+      }
+
+      function moveCarousel(direction) {
+        if (isEnvelopeOpened) return;
+        
+        currentIndex += direction;
+        
+        // Loop around smoothly
+        if (currentIndex < 0) currentIndex = NUM_ENVELOPES - 1;
+        if (currentIndex >= NUM_ENVELOPES) currentIndex = 0;
+        
+        updateCarousel();
+      }
+
+      prevBtn.addEventListener('click', () => moveCarousel(-1));
+      nextBtn.addEventListener('click', () => moveCarousel(1));
+
+      // Keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') moveCarousel(-1);
+        if (e.key === 'ArrowRight') moveCarousel(1);
+      });
+
+      // Touch/swipe support
+      let touchStartX = 0;
+      let touchEndX = 0;
+
+      carouselContainer.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      });
+
+      carouselContainer.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+      });
+
+      function handleSwipe() {
+        if (touchEndX < touchStartX - 50) moveCarousel(1);  // Swipe left
+        if (touchEndX > touchStartX + 50) moveCarousel(-1); // Swipe right
+      }
+
+      function generateAndRememberMessage() {
+        currentMessageParts = {
+          validation: null,
+          permission: null,
+          rest: null,
+          you: null
+        };
+        
+        const patterns = [
+          ['validation', 'permission'],
+          ['validation', 'rest'],
+          ['permission', 'rest'],
+          ['validation', 'permission', 'rest'],
+          ['you', 'permission'],
+          ['you', 'rest']
+        ];
+        const chosenPattern = patterns[Math.floor(Math.random() * patterns.length)];
+        
+        const parts = [];
+        for (let partType of chosenPattern) {
+          const options = currentGrammar.rules['<' + partType + '>'];
+          const index = Math.floor(Math.random() * options.length);
+          currentMessageParts[partType] = index;
+          parts.push(options[index]);
+        }
+        
+        return parts.join(' ');
+      }
+      
+      function translateCurrentMessage() {
+        const parts = [];
+        
+        for (let partType in currentMessageParts) {
+          const index = currentMessageParts[partType];
+          if (index !== null) {
+            const options = currentGrammar.rules['<' + partType + '>'];
+            parts.push(options[index]);
+          }
+        }
+        
+        return parts.join(' ');
+      }
+
+      function openEnvelope(envelope, letter, messageText, sparkles, envelopeIndex) {
+        if (isEnvelopeOpened) return;
+        
+        envelope.classList.add('opened');
+        isEnvelopeOpened = true;
+        carouselContainer.classList.add('envelope-opened');
+
+        // Get the pre-generated message for THIS envelope
+        const envelopeMessage = envelopeMessages[envelopeIndex];
+        const message = currentLanguage === "english" ? envelopeMessage.english : envelopeMessage.chinese;
+        
+        messageText.textContent = message;
+        messageText.dataset.envelopeIndex = envelopeIndex; // Remember which envelope this is
+
+        if (currentLanguage === "chinese") {
+          messageText.classList.add("chinese");
+        } else {
+          messageText.classList.remove("chinese");
+        }
+
+        setTimeout(() => {
+          instructions.textContent = "Click the text to reveal the message";
+        }, 800);
+      }
+
+      function toggleLanguage() {
+        if (currentLanguage === "english") {
+          currentLanguage = "chinese";
+          currentGrammar = chineseGrammar;
+          languageToggle.textContent = "Switch to English";
+          instructions.textContent = "滑動選擇信封並點擊蠟封打開";
+        } else {
+          currentLanguage = "english";
+          currentGrammar = englishGrammar;
+          languageToggle.textContent = "切換中文";
+          instructions.textContent = "Swipe through envelopes and click the wax seal to open";
+        }
+
+        if (isEnvelopeOpened) {
+          const openedEnvelope = envelopes[currentIndex];
+          const messageText = openedEnvelope.querySelector('.message-text');
+          const envelopeIndex = parseInt(messageText.dataset.envelopeIndex);
+          
+          // Get the same message in the other language
+          const envelopeMessage = envelopeMessages[envelopeIndex];
+          const message = currentLanguage === "english" ? envelopeMessage.english : envelopeMessage.chinese;
+          
+          messageText.textContent = message;
+
+          if (currentLanguage === "chinese") {
+            messageText.classList.add("chinese");
+            instructions.textContent = "點擊文字顯示訊息";
+          } else {
+            messageText.classList.remove("chinese");
+            instructions.textContent = "Click the text to reveal the message";
+          }
+        }
+      }
+
+      // Timer functions
+      function initializeTimer() {
+        if (countdownInterval !== null) return;
         
         const stored = localStorage.getItem('nextLetterTime');
         if (stored) {
           nextLetterTime = parseInt(stored);
-          // If time has passed, reset
           if (Date.now() >= nextLetterTime) {
             setNextLetterTime();
           }
@@ -619,7 +886,6 @@
         const remaining = nextLetterTime - now;
 
         if (remaining <= 0) {
-          // Time's up! Get new letter automatically
           automaticNewLetter();
         }
       }
@@ -630,154 +896,34 @@
       }
 
       function automaticNewLetter() {
-        // Close current letter
-        envelope.classList.remove("opened");
+        // Reset all envelopes
+        envelopes.forEach(card => {
+          const envelope = card.querySelector('.envelope');
+          const letter = card.querySelector('.letter');
+          const sparkles = card.querySelector('.sparkles');
+          
+          envelope.classList.remove('opened');
+          letter.classList.remove('revealed');
+          sparkles.classList.remove('hidden');
+        });
+
         isEnvelopeOpened = false;
-        letter.classList.remove("revealed");
+        carouselContainer.classList.remove('envelope-opened');
 
-        // Show sparkles again
-        document.getElementById('sparkles').classList.remove('hidden');
-
-        // Reset instructions
         if (currentLanguage === "english") {
-          instructions.textContent = "Click the wax seal to open your letter";
+          instructions.textContent = "Swipe through envelopes and click the wax seal to open";
         } else {
-          instructions.textContent = "點擊蠟封打開信件";
+          instructions.textContent = "滑動選擇信封並點擊蠟封打開";
         }
 
-        // Reset timer for next 4 hours
         setNextLetterTime();
-        
-        // Generate will happen when user opens envelope
       }
-
-      function generateAndRememberMessage() {
-        // Clear previous parts
-        currentMessageParts = {
-          validation: null,
-          permission: null,
-          rest: null,
-          you: null
-        };
-        
-        // Pick a random pattern
-        const patterns = [
-          ['validation', 'permission'],
-          ['validation', 'rest'],
-          ['permission', 'rest'],
-          ['validation', 'permission', 'rest'],
-          ['you', 'permission'],
-          ['you', 'rest']
-        ];
-        const chosenPattern = patterns[Math.floor(Math.random() * patterns.length)];
-        
-        // For each part in the pattern, pick a random index and remember it
-        const parts = [];
-        for (let partType of chosenPattern) {
-          const options = currentGrammar.rules['<' + partType + '>'];
-          const index = Math.floor(Math.random() * options.length);
-          currentMessageParts[partType] = index;
-          parts.push(options[index]);
-        }
-        
-        return parts.join(' ');
-      }
-      
-      function translateCurrentMessage() {
-        // Use the same indices to get the equivalent message in the other language
-        const parts = [];
-        
-        for (let partType in currentMessageParts) {
-          const index = currentMessageParts[partType];
-          if (index !== null) {
-            const options = currentGrammar.rules['<' + partType + '>'];
-            parts.push(options[index]);
-          }
-        }
-        
-        return parts.join(' ');
-      }
-      
-      function openEnvelope() {
-        if (!isEnvelopeOpened) {
-          envelope.classList.add("opened");
-          isEnvelopeOpened = true;
-
-          const message = generateAndRememberMessage();
-          messageText.textContent = message;
-
-          if (currentLanguage === "chinese") {
-            messageText.classList.add("chinese");
-          } else {
-            messageText.classList.remove("chinese");
-          }
-
-          setTimeout(() => {
-            instructions.textContent = "Click the text to reveal the message";
-          }, 800);
-        }
-      }
-
-      function toggleLanguage() {
-        if (currentLanguage === "english") {
-          currentLanguage = "chinese";
-          currentGrammar = chineseGrammar;
-          languageToggle.textContent = "Switch to English";
-          instructions.textContent = "點擊蠟封打開信件";
-        } else {
-          currentLanguage = "english";
-          currentGrammar = englishGrammar;
-          languageToggle.textContent = "切換中文";
-          instructions.textContent = "Click the wax seal to open your letter";
-        }
-
-        if (isEnvelopeOpened) {
-          // Translate the SAME message, don't generate new one
-          const message = translateCurrentMessage();
-          messageText.textContent = message;
-
-          if (currentLanguage === "chinese") {
-            messageText.classList.add("chinese");
-            instructions.textContent = "點擊文字顯示訊息";
-          } else {
-            messageText.classList.remove("chinese");
-            instructions.textContent = "Click the text to reveal the message";
-          }
-        }
-      }
-
-      // Click on text reveals it AND stops glitter AND STARTS TIMER
-      messageText.addEventListener("click", (e) => {
-        e.stopPropagation();
-        letter.classList.add("revealed");
-        
-        // Hide sparkles
-        document.getElementById('sparkles').classList.add('hidden');
-        
-        // START THE 4-HOUR TIMER NOW!
-        initializeTimer();
-      });
-
-      // Click on letter (but not text) only reveals, glitter continues
-      letter.addEventListener("click", () => {
-        letter.classList.add("revealed");
-      });
-
-      waxSeal.addEventListener("click", (e) => {
-        e.stopPropagation();
-        openEnvelope();
-      });
-
-      envelope.addEventListener("click", () => {
-        if (!isEnvelopeOpened) {
-          openEnvelope();
-        }
-      });
 
       languageToggle.addEventListener("click", toggleLanguage);
 
-      // DON'T start timer on page load - only when user reveals the message
-      // initializeTimer(); ← REMOVED
+      // Initialize
+      generateEnvelopeMessages(); // Generate unique message for each envelope
+      createEnvelopes();
     </script>
   </body>
 </html>
