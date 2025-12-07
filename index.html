@@ -396,7 +396,7 @@
 
       /* Navigation arrows */
       .nav-arrow {
-        position: absolute;
+        position: fixed; /* Changed from absolute to fixed - stays at screen edge */
         top: 50%;
         transform: translateY(-50%);
         width: 50px;
@@ -422,15 +422,15 @@
       }
 
       .nav-arrow.left {
-        left: 20px;
+        left: 80px; /* Moved inward from 30px */
       }
 
       .nav-arrow.right {
-        right: 20px;
+        right: 80px; /* Moved inward from 30px */
       }
 
       /* Hide arrows when envelope is opened */
-      .carousel-container.envelope-opened .nav-arrow {
+      .nav-arrow.hidden {
         opacity: 0;
         pointer-events: none;
       }
@@ -441,11 +441,11 @@
 
     <div class="language-toggle" id="languageToggle">切換中文</div>
 
-    <div class="carousel-container" id="carouselContainer">
-      <!-- Navigation arrows -->
-      <div class="nav-arrow left" id="prevBtn">‹</div>
-      <div class="nav-arrow right" id="nextBtn">›</div>
+    <!-- Navigation arrows - outside carousel container, at screen edges -->
+    <div class="nav-arrow left" id="prevBtn">‹</div>
+    <div class="nav-arrow right" id="nextBtn">›</div>
 
+    <div class="carousel-container" id="carouselContainer">
       <!-- Envelope carousel -->
       <div class="envelope-carousel" id="envelopeCarousel">
         <!-- Envelopes will be generated here -->
@@ -806,7 +806,10 @@
         
         envelope.classList.add('opened');
         isEnvelopeOpened = true;
-        carouselContainer.classList.add('envelope-opened');
+        
+        // Hide arrows when envelope opens
+        prevBtn.classList.add('hidden');
+        nextBtn.classList.add('hidden');
 
         // Get the pre-generated message for THIS envelope
         const envelopeMessage = envelopeMessages[envelopeIndex];
@@ -908,7 +911,10 @@
         });
 
         isEnvelopeOpened = false;
-        carouselContainer.classList.remove('envelope-opened');
+        
+        // Show arrows again
+        prevBtn.classList.remove('hidden');
+        nextBtn.classList.remove('hidden');
 
         if (currentLanguage === "english") {
           instructions.textContent = "Swipe through envelopes and click the wax seal to open";
