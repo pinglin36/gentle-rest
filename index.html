@@ -253,14 +253,100 @@
         }
       }
 
-      /* Canvas glitter overlay */
-      #glitterCanvas {
+      /* Canvas glitter overlay - NOW SIMPLE CSS SPARKLES */
+      .sparkles {
         position: absolute;
         inset: 0;
         width: 100%;
         height: 100%;
         pointer-events: none;
         z-index: 0;
+        opacity: 1;
+        transition: opacity 0.5s ease;
+      }
+
+      .sparkles.hidden {
+        opacity: 0;
+      }
+
+      .sparkle {
+        position: absolute;
+        font-size: 20px;
+        opacity: 0;
+        animation: twinkle 3s ease-in-out infinite;
+        pointer-events: none;
+      }
+
+      /* Position sparkles around the letter */
+      .sparkle:nth-child(1) {
+        top: 15%;
+        left: 10%;
+        animation-delay: 0s;
+      }
+
+      .sparkle:nth-child(2) {
+        top: 25%;
+        right: 15%;
+        animation-delay: 0.5s;
+      }
+
+      .sparkle:nth-child(3) {
+        top: 40%;
+        left: 20%;
+        animation-delay: 1s;
+      }
+
+      .sparkle:nth-child(4) {
+        top: 50%;
+        right: 10%;
+        animation-delay: 1.5s;
+      }
+
+      .sparkle:nth-child(5) {
+        top: 65%;
+        left: 15%;
+        animation-delay: 2s;
+      }
+
+      .sparkle:nth-child(6) {
+        top: 75%;
+        right: 20%;
+        animation-delay: 2.5s;
+      }
+
+      .sparkle:nth-child(7) {
+        top: 20%;
+        left: 50%;
+        animation-delay: 0.7s;
+      }
+
+      .sparkle:nth-child(8) {
+        top: 60%;
+        left: 50%;
+        animation-delay: 1.7s;
+      }
+
+      .sparkle:nth-child(9) {
+        top: 35%;
+        left: 80%;
+        animation-delay: 1.2s;
+      }
+
+      .sparkle:nth-child(10) {
+        top: 80%;
+        left: 40%;
+        animation-delay: 2.2s;
+      }
+
+      @keyframes twinkle {
+        0%, 100% {
+          opacity: 0;
+          transform: scale(0.3) rotate(0deg);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1) rotate(180deg);
+        }
       }
 
       .glitter-wrapper {
@@ -302,34 +388,6 @@
         opacity: 0.7;
       }
 
-      /* Get New Letter Button */
-      .new-letter-btn {
-        position: fixed;
-        bottom: 30px;
-        left: 50%;
-        transform: translateX(-50%);
-        padding: 12px 30px;
-        background: #b9cbd9;
-        color: #4a5568;
-        border: none;
-        border-radius: 25px;
-        font-size: 0.9em;
-        cursor: pointer;
-        opacity: 0;
-        pointer-events: none;
-        transition: all 0.3s ease;
-      }
-
-      .new-letter-btn.show {
-        opacity: 1;
-        pointer-events: auto;
-      }
-
-      .new-letter-btn:hover {
-        background: #a7bccf;
-        transform: translateX(-50%) translateY(-2px);
-      }
-
       /* Title */
       h1 {
         position: fixed;
@@ -355,8 +413,21 @@
         <div class="wax-seal" id="waxSeal"></div>
 
         <div class="letter" id="letter">
-          <canvas id="glitterCanvas"></canvas>
+          <!-- Simple CSS sparkles instead of canvas -->
+          <div class="sparkles" id="sparkles">
+            <span class="sparkle">✨</span>
+            <span class="sparkle">✨</span>
+            <span class="sparkle">✨</span>
+            <span class="sparkle">✨</span>
+            <span class="sparkle">✨</span>
+            <span class="sparkle">✨</span>
+            <span class="sparkle">✨</span>
+            <span class="sparkle">✨</span>
+            <span class="sparkle">✨</span>
+            <span class="sparkle">✨</span>
+          </div>
 
+          <!-- text on top -->
           <div class="glitter-wrapper">
             <p class="message-text" id="messageText">
               Click the wax seal to open
@@ -369,8 +440,6 @@
     <div class="instructions" id="instructions">
       Click the wax seal to open your letter
     </div>
-
-    <button class="new-letter-btn" id="newLetterBtn">Get New Letter</button>
 
     <script>
       // ========= CONTEXT-FREE GRAMMAR =========
@@ -499,6 +568,14 @@
       let currentLanguage = "english";
       let currentGrammar = englishGrammar;
       let isEnvelopeOpened = false;
+      
+      // Store the structure of current message for translation
+      let currentMessageParts = {
+        validation: null,
+        permission: null,
+        rest: null,
+        you: null
+      };
 
       const envelope = document.getElementById("envelope");
       const waxSeal = document.getElementById("waxSeal");
@@ -506,14 +583,127 @@
       const messageText = document.getElementById("messageText");
       const languageToggle = document.getElementById("languageToggle");
       const instructions = document.getElementById("instructions");
-      const newLetterBtn = document.getElementById("newLetterBtn");
 
+      // Timer variables - runs silently in background
+      let nextLetterTime = null;
+      let countdownInterval = null;
+      const FOUR_HOURS = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
+
+      // Initialize or get next letter time from localStorage
+      function initializeTimer() {
+        // If timer is already running, don't start again
+        if (countdownInterval !== null) {
+          return;
+        }
+        
+        const stored = localStorage.getItem('nextLetterTime');
+        if (stored) {
+          nextLetterTime = parseInt(stored);
+          // If time has passed, reset
+          if (Date.now() >= nextLetterTime) {
+            setNextLetterTime();
+          }
+        } else {
+          setNextLetterTime();
+        }
+        startCountdown();
+      }
+
+      function setNextLetterTime() {
+        nextLetterTime = Date.now() + FOUR_HOURS;
+        localStorage.setItem('nextLetterTime', nextLetterTime.toString());
+      }
+
+      function updateCountdown() {
+        const now = Date.now();
+        const remaining = nextLetterTime - now;
+
+        if (remaining <= 0) {
+          // Time's up! Get new letter automatically
+          automaticNewLetter();
+        }
+      }
+
+      function startCountdown() {
+        updateCountdown();
+        countdownInterval = setInterval(updateCountdown, 1000);
+      }
+
+      function automaticNewLetter() {
+        // Close current letter
+        envelope.classList.remove("opened");
+        isEnvelopeOpened = false;
+        letter.classList.remove("revealed");
+
+        // Show sparkles again
+        document.getElementById('sparkles').classList.remove('hidden');
+
+        // Reset instructions
+        if (currentLanguage === "english") {
+          instructions.textContent = "Click the wax seal to open your letter";
+        } else {
+          instructions.textContent = "點擊蠟封打開信件";
+        }
+
+        // Reset timer for next 4 hours
+        setNextLetterTime();
+        
+        // Generate will happen when user opens envelope
+      }
+
+      function generateAndRememberMessage() {
+        // Clear previous parts
+        currentMessageParts = {
+          validation: null,
+          permission: null,
+          rest: null,
+          you: null
+        };
+        
+        // Pick a random pattern
+        const patterns = [
+          ['validation', 'permission'],
+          ['validation', 'rest'],
+          ['permission', 'rest'],
+          ['validation', 'permission', 'rest'],
+          ['you', 'permission'],
+          ['you', 'rest']
+        ];
+        const chosenPattern = patterns[Math.floor(Math.random() * patterns.length)];
+        
+        // For each part in the pattern, pick a random index and remember it
+        const parts = [];
+        for (let partType of chosenPattern) {
+          const options = currentGrammar.rules['<' + partType + '>'];
+          const index = Math.floor(Math.random() * options.length);
+          currentMessageParts[partType] = index;
+          parts.push(options[index]);
+        }
+        
+        return parts.join(' ');
+      }
+      
+      function translateCurrentMessage() {
+        // Use the same indices to get the equivalent message in the other language
+        const parts = [];
+        
+        for (let partType in currentMessageParts) {
+          const index = currentMessageParts[partType];
+          if (index !== null) {
+            const options = currentGrammar.rules['<' + partType + '>'];
+            parts.push(options[index]);
+          }
+        }
+        
+        return parts.join(' ');
+      }
+      
       function openEnvelope() {
         if (!isEnvelopeOpened) {
           envelope.classList.add("opened");
           isEnvelopeOpened = true;
 
-          const message = currentGrammar.generateMessage();
+          const message = generateAndRememberMessage();
           messageText.textContent = message;
 
           if (currentLanguage === "chinese") {
@@ -525,29 +715,7 @@
           setTimeout(() => {
             instructions.textContent = "Click the text to reveal the message";
           }, 800);
-
-          setTimeout(() => {
-            newLetterBtn.classList.add("show");
-          }, 1500);
         }
-      }
-
-      function getNewLetter() {
-        envelope.classList.remove("opened");
-        isEnvelopeOpened = false;
-        newLetterBtn.classList.remove("show");
-        letter.classList.remove("revealed");
-
-        showGlitter = true;
-
-        if (currentLanguage === "english") {
-          instructions.textContent = "Click the wax seal to open your letter";
-        } else {
-          instructions.textContent = "點擊蠟封打開信件";
-        }
-
-        const message = currentGrammar.generateMessage();
-        messageText.textContent = message;
       }
 
       function toggleLanguage() {
@@ -564,7 +732,8 @@
         }
 
         if (isEnvelopeOpened) {
-          const message = currentGrammar.generateMessage();
+          // Translate the SAME message, don't generate new one
+          const message = translateCurrentMessage();
           messageText.textContent = message;
 
           if (currentLanguage === "chinese") {
@@ -577,18 +746,21 @@
         }
       }
 
-      // Click on text reveals it AND stops glitter
+      // Click on text reveals it AND stops glitter AND STARTS TIMER
       messageText.addEventListener("click", (e) => {
-        e.stopPropagation(); // Don't trigger letter click
+        e.stopPropagation();
         letter.classList.add("revealed");
-        showGlitter = false;
-        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+        
+        // Hide sparkles
+        document.getElementById('sparkles').classList.add('hidden');
+        
+        // START THE 4-HOUR TIMER NOW!
+        initializeTimer();
       });
 
       // Click on letter (but not text) only reveals, glitter continues
       letter.addEventListener("click", () => {
         letter.classList.add("revealed");
-        // Note: glitter keeps going! Only stops when clicking text
       });
 
       waxSeal.addEventListener("click", (e) => {
@@ -603,328 +775,9 @@
       });
 
       languageToggle.addEventListener("click", toggleLanguage);
-      newLetterBtn.addEventListener("click", getNewLetter);
 
-      // ========= PARTICLE GLITTER =========
-      const glitterCanvas = document.getElementById("glitterCanvas");
-      const ctx = glitterCanvas.getContext("2d");
-
-      let particles = [];
-      let emitters = [];
-      let forces = [];
-      let collidedMass = 0;
-      let drawScale = 1;
-      let maxParticles = 180; // Reduced from 300
-      let emissionRate = 1; // Back to 1 to reduce load
-      let canvasWidth = 0;
-      let canvasHeight = 0;
-      let showGlitter = true;
-
-      const cos = Math.cos,
-        sin = Math.sin,
-        sqrt = Math.sqrt,
-        abs = Math.abs,
-        atan2 = Math.atan2,
-        random = Math.random,
-        PI = Math.PI;
-      const sqr = (v) => v * v;
-
-      function Vector(x, y, z) {
-        this.x = x || 0;
-        this.y = y || 0;
-        this.z = z || 0;
-      }
-      Vector.prototype = {
-        add: function (vector) {
-          this.x += vector.x;
-          this.y += vector.y;
-          this.z += vector.z;
-          return this;
-        },
-        scale: function (factor) {
-          this.x *= factor;
-          this.y *= factor;
-          this.z *= factor;
-          return this;
-        },
-        magnitude: function () {
-          return sqrt(sqr(this.x + this.y));
-        },
-        distance: function (another) {
-          return abs(
-            sqrt(sqr(this.x - another.x) + sqr(this.y - another.y))
-          );
-        },
-        angle: function (angle, magnitude) {
-          if (angle && magnitude) return Vector.fromAngle(angle, magnitude);
-          return atan2(this.y, this.x);
-        },
-        clone: function () {
-          return new Vector(this.x, this.y, this.z);
-        },
-        random: function (r) {
-          this.x += random() * r * 2 - r;
-          this.y += random() * r * 2 - r;
-          return this;
-        },
-      };
-      Vector.fromAngle = function (angle, magnitude) {
-        return new Vector(
-          magnitude * cos(angle),
-          magnitude * sin(angle),
-          magnitude * sin(angle)
-        );
-      };
-
-      function Particle(pt, vc, ac, mass) {
-        this.pos = pt || new Vector(0, 0);
-        this.vc = vc || new Vector(0, 0);
-        this.ac = ac || new Vector(0, 0);
-        this.mass = mass || 1;
-        this.alive = true;
-      }
-      Particle.prototype.move = function () {
-        this.vc.add(this.ac);
-        this.pos.add(this.vc);
-      };
-      Particle.prototype.reactToForces = function (fields) {
-        let totalAccelerationX = 0;
-        let totalAccelerationY = 0;
-
-        for (let i = 0; i < fields.length; i++) {
-          const field = fields[i];
-          const vectorX = field.pos.x - this.pos.x;
-          const vectorY = field.pos.y - this.pos.y;
-          const distance = this.pos.distance(field.pos);
-          const force = G(this.forceBetween(field, distance));
-          totalAccelerationX += vectorX * force;
-          totalAccelerationY += vectorY * force;
-        }
-        this.ac = new Vector(totalAccelerationX, totalAccelerationY);
-      };
-      Particle.prototype.forceBetween = function (another, distance) {
-        const d = distance ? distance : this.pos.distance(another.pos);
-        return (this.mass * another.mass) / sqr(d);
-      };
-
-      function ParticleEmitter(pos, vc, ang) {
-        this.pos = pos;
-        this.vc = vc;
-        this.ang = ang || 0.09;
-      }
-      ParticleEmitter.prototype.emit = function () {
-        const angle =
-          this.vc.angle() + this.ang - random() * this.ang * 2;
-        const magnitude = this.vc.magnitude();
-        const position = this.pos.clone();
-        position.add(
-          new Vector(
-            ((random() * 120 - 60) * drawScale) / 2,
-            ((random() * 120 - 60) * drawScale) / 2
-          )
-        );
-        const velocity = Vector.fromAngle(angle, magnitude);
-        return new Particle(position, velocity);
-      };
-
-      function Force(pos, m) {
-        this.pos = pos;
-        this.mass = m || 120;
-      }
-
-      function G(data) {
-        return 0.004 * data;
-      }
-
-      function renderToCanvas(width, height, renderFunction) {
-        const buffer = document.createElement("canvas");
-        buffer.width = width;
-        buffer.height = height;
-        renderFunction(buffer.getContext("2d"));
-        return buffer;
-      }
-
-      let minParticleSize = 1.0; // Slightly smaller
-      let ctr = 0;
-      const colors = [
-        "rgba(255,255,255,",
-        "rgba(150,190,255,",
-        "rgba(255,255,190,",
-      ];
-      function rndc() {
-        return colors[~~(Math.random() * colors.length)];
-      }
-      const c2 = "rgba(255,120,80,";
-
-      function addNewParticles() {
-        if (!showGlitter) return;
-        const _emit = () => {
-          let ret = 0;
-          for (let i = 0; i < emitters.length; i++) {
-            for (let j = 0; j < emissionRate; j++) {
-              const p = emitters[i].emit();
-              p.color =
-                ctr % 12 === 0
-                  ? random() * 5 <= 1
-                    ? c2
-                    : rndc()
-                  : rndc();
-              p.mass = 1.0 + random() * 1.5; // Smaller range
-              particles.push(p);
-              ret += p.mass;
-              ctr++;
-            }
-          }
-          return ret;
-        };
-
-        if (collidedMass !== 0) {
-          while (collidedMass !== 0) {
-            collidedMass -= _emit();
-            collidedMass = collidedMass < 0 ? 0 : collidedMass;
-          }
-        }
-        if (particles.length > maxParticles) return;
-        _emit();
-      }
-
-      function plotParticles() {
-        const currentParticles = [];
-        for (let i = 0; i < particles.length; i++) {
-          const particle = particles[i];
-          particle.reactToForces(forces);
-          particle.move();
-          if (
-            particle.pos.x < -40 ||
-            particle.pos.x > canvasWidth + 40 ||
-            particle.pos.y < -40 ||
-            particle.pos.y > canvasHeight + 40
-          ) {
-            continue;
-          }
-          currentParticles.push(particle);
-        }
-        particles = currentParticles;
-      }
-
-      const offscreenCache = {};
-      function renderParticle(p) {
-        if (!p.size) p.size = p.mass * 0.5; // Slightly bigger render
-        if (!p.opacity) p.opacity = 0.35; // Start more visible
-
-        p.opacity += (Math.random() - 0.5) * 0.08;
-        if (p.opacity < 0.2) p.opacity = 0.2; // Minimum more visible
-        if (p.opacity > 0.7) p.opacity = 0.7; // Maximum brighter
-
-        let actualSize = p.size / drawScale;
-        if (actualSize < minParticleSize) actualSize = minParticleSize;
-
-        const cacheKey = actualSize + "_" + p.opacity + "_" + p.color;
-        let cacheValue = offscreenCache[cacheKey];
-        if (!cacheValue) {
-          cacheValue = renderToCanvas(
-            actualSize * 16,
-            actualSize * 16,
-            function (ofsContext) {
-              // Simplified to 2 layers instead of 3 for better performance
-              const fills = [
-                { size: actualSize * 0.5, opacity: 1 },
-                { size: actualSize * 1.5, opacity: p.opacity / 2 },
-              ];
-              ofsContext.beginPath();
-              for (let f of fills) {
-                ofsContext.fillStyle = p.color + f.opacity + ")";
-                ofsContext.arc(
-                  actualSize * 8,
-                  actualSize * 8,
-                  f.size,
-                  0,
-                  Math.PI * 2,
-                  true
-                );
-                ofsContext.fill();
-              }
-              ofsContext.closePath();
-            }
-          );
-          offscreenCache[cacheKey] = cacheValue;
-        }
-
-        const posX = p.pos.x / drawScale;
-        const posY = p.pos.y / drawScale;
-        ctx.drawImage(cacheValue, posX, posY);
-      }
-
-      function renderScene() {
-        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-        if (!showGlitter) return;
-        for (let p of particles) renderParticle(p);
-      }
-
-      function loop() {
-        addNewParticles();
-        plotParticles();
-        renderScene();
-        requestAnimationFrame(loop);
-      }
-
-      function setupParticles() {
-        const rect = letter.getBoundingClientRect();
-        glitterCanvas.width = rect.width;
-        glitterCanvas.height = rect.height;
-        canvasWidth = glitterCanvas.width;
-        canvasHeight = glitterCanvas.height;
-
-        particles = [];
-        // 6 emitters - enough coverage without lag
-        emitters = [
-          // Top
-          new ParticleEmitter(
-            new Vector(canvasWidth * 0.3, 30),
-            Vector.fromAngle(1.5, 0.6),
-            1.5
-          ),
-          new ParticleEmitter(
-            new Vector(canvasWidth * 0.7, 30),
-            Vector.fromAngle(1.5, 0.6),
-            1.5
-          ),
-          // Middle
-          new ParticleEmitter(
-            new Vector(30, canvasHeight / 2),
-            Vector.fromAngle(0, 0.6),
-            1.5
-          ),
-          new ParticleEmitter(
-            new Vector(canvasWidth - 30, canvasHeight / 2),
-            Vector.fromAngle(3.14, 0.6),
-            1.5
-          ),
-          // Bottom
-          new ParticleEmitter(
-            new Vector(canvasWidth * 0.3, canvasHeight - 30),
-            Vector.fromAngle(4.7, 0.6),
-            1.5
-          ),
-          new ParticleEmitter(
-            new Vector(canvasWidth * 0.7, canvasHeight - 30),
-            Vector.fromAngle(4.7, 0.6),
-            1.5
-          ),
-        ];
-
-        forces = [
-          new Force(new Vector(canvasWidth / 2, canvasHeight / 2), 220),
-        ];
-      }
-
-      window.addEventListener("load", () => {
-        setupParticles();
-        loop();
-      });
-      window.addEventListener("resize", () => {
-        setupParticles();
-      });
+      // DON'T start timer on page load - only when user reveals the message
+      // initializeTimer(); ← REMOVED
     </script>
   </body>
 </html>
