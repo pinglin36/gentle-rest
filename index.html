@@ -1,347 +1,930 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gentle Rest - 溫柔的休息</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gentle Rest</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            font-family: 'Georgia', serif;
-            background: #D7E2E8;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
+      body {
+        font-family: "Georgia", serif;
+        background: #d7e2e8;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        overflow: hidden;
+      }
 
-        .container {
-            background: white;
-            padding: 60px 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-            width: 100%;
-            text-align: center;
-        }
+      /* Language Toggle in Corner */
+      .language-toggle {
+        position: fixed;
+        top: 30px;
+        right: 30px;
+        font-size: 0.9em;
+        color: #6b7c8a;
+        cursor: pointer;
+        transition: color 0.3s ease;
+        z-index: 1000;
+      }
 
-        h1 {
-            font-size: 2em;
-            color: #4a5568;
-            margin-bottom: 40px;
-            font-weight: 300;
-        }
+      .language-toggle:hover {
+        color: #4a5568;
+      }
 
-        #message-display {
-            min-height: 180px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 30px;
-            margin: 40px 0;
-            background: #f7fafc;
-            border-radius: 15px;
-        }
+      /* Main Container */
+      .scene {
+        position: relative;
+        width: 100%;
+        max-width: 600px;
+        height: 500px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
 
-        #message-text {
-            font-size: 1.3em;
-            line-height: 1.8;
-            color: #2d3748;
-            font-weight: 300;
-        }
+      /* Envelope - bigger */
+      .envelope {
+        position: relative;
+        width: 520px;
+        height: 320px;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+      }
 
-        /* Chinese text styling */
-        .chinese {
-            font-family: 'Microsoft YaHei', 'PingFang SC', 'SimHei', sans-serif;
-        }
+      .envelope:hover {
+        transform: scale(1.02);
+      }
 
-        .button-group {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
+      .envelope-body {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: #f5f0e8;
+        border: 2px solid #d4c5b0;
+        border-radius: 3px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        z-index: 1;
+      }
 
-        button {
-            padding: 15px 35px;
-            font-size: 1em;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
+      /* Envelope Flap */
+      .envelope-flap {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 50%;
+        background: #ede5d8;
+        border: 2px solid #d4c5b0;
+        border-bottom: none;
+        transform-origin: top center;
+        transition: transform 0.8s ease;
+        clip-path: polygon(0 0, 50% 60%, 100% 0);
+        z-index: 10;
+      }
 
-        #new-message-btn {
-            background: #EAE7E2;
-            color: #4a5568;
-        }
+      .envelope.opened .envelope-flap {
+        transform: rotateX(180deg);
+      }
 
-        #new-message-btn:hover {
-            background: #ddd8d0;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(234, 231, 226, 0.5);
-        }
+      /* Wax Seal - Realistic with 3D pressed flower emboss */
+      .wax-seal {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 75px;
+        height: 75px;
+        border-radius: 50%;
+        z-index: 20;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        
+        /* Realistic wax gradient - lighter at edges, darker in center */
+        background: radial-gradient(
+          circle at 35% 30%,
+          #e87171 0%,
+          #d65555 25%,
+          #c94545 50%,
+          #a83232 75%,
+          #8b2525 100%
+        );
+        
+        /* Multiple shadows for 3D depth */
+        box-shadow: 
+          /* Outer drop shadow */
+          0 5px 12px rgba(100, 30, 30, 0.5),
+          /* Inner pressed shadow (top) */
+          inset 0 -3px 6px rgba(0, 0, 0, 0.35),
+          /* Inner highlight (bottom) */
+          inset 0 3px 4px rgba(255, 255, 255, 0.2),
+          /* Subtle outer glow */
+          0 0 25px rgba(201, 69, 69, 0.25);
+        
+        /* Subtle texture overlay */
+        background-image: 
+          radial-gradient(
+            circle at 35% 30%,
+            #e87171 0%,
+            #d65555 25%,
+            #c94545 50%,
+            #a83232 75%,
+            #8b2525 100%
+          ),
+          /* Fine texture pattern */
+          repeating-radial-gradient(
+            circle at 50% 50%,
+            transparent 0,
+            transparent 1.5px,
+            rgba(0, 0, 0, 0.04) 1.5px,
+            rgba(0, 0, 0, 0.04) 3px
+          );
+      }
 
-        #language-toggle {
-            background: #B9CBD9;
-            color: #4a5568;
-        }
+      .wax-seal:hover {
+        transform: translate(-50%, -50%) scale(1.08);
+        box-shadow: 
+          0 7px 16px rgba(100, 30, 30, 0.6),
+          inset 0 -3px 6px rgba(0, 0, 0, 0.35),
+          inset 0 3px 4px rgba(255, 255, 255, 0.2),
+          0 0 30px rgba(201, 69, 69, 0.35);
+      }
 
-        #language-toggle:hover {
-            background: #a7bccf;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(185, 203, 217, 0.5);
-        }
+      /* Flower center - pressed down emboss effect */
+      .wax-seal::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 18px;
+        height: 18px;
+        background: radial-gradient(
+          circle,
+          rgba(0, 0, 0, 0.3) 0%,
+          rgba(0, 0, 0, 0.15) 50%,
+          transparent 100%
+        );
+        border-radius: 50%;
+        /* Pressed inward effect */
+        box-shadow: 
+          inset 0 2px 3px rgba(0, 0, 0, 0.5),
+          inset 0 -1px 2px rgba(255, 100, 100, 0.2),
+          0 1px 1px rgba(255, 255, 255, 0.1);
+      }
 
-        .footer {
-            margin-top: 40px;
-            color: #a0aec0;
-            font-size: 0.9em;
-        }
+      /* Flower petals - carved/embossed pattern */
+      .wax-seal::after {
+        content: '✿';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        /* Dark shadow for pressed-in look */
+        color: rgba(0, 0, 0, 0.3);
+        font-size: 46px;
+        /* Embossed shadow effect */
+        text-shadow: 
+          /* Dark pressed shadow */
+          0 2px 1px rgba(0, 0, 0, 0.3),
+          /* Light highlight on opposite side */
+          0 -1px 0 rgba(255, 255, 255, 0.15),
+          /* Subtle glow */
+          0 0 3px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+      }
 
-        /* Fade in animation */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+      .envelope.opened .wax-seal {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.5s ease;
+      }
 
-        .fade-in {
-            animation: fadeIn 0.5s ease;
+      /* Letter Inside */
+      .letter {
+        position: absolute;
+        top: 4%;
+        left: 50%;
+        transform: translate(-50%, 0);
+        width: 92%;
+        height: 280px;
+        background: white;
+        border: 1px solid #e8e8e8;
+        border-radius: 3px;
+        padding: 20px 30px;
+        opacity: 0;
+        pointer-events: none;
+        transition: none;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        z-index: 50;
+        cursor: pointer;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        overflow: hidden;
+      }
+
+      .envelope.opened .letter {
+        opacity: 1;
+        pointer-events: auto;
+        animation: popUpDown 1.4s ease-in-out forwards;
+      }
+
+      @keyframes popUpDown {
+        0% {
+          top: 4%;
+          transform: translate(-50%, 0);
         }
+        50% {
+          top: -30%;
+          transform: translate(-50%, 0);
+        }
+        100% {
+          top: 4%;
+          transform: translate(-50%, 0);
+        }
+      }
+
+      /* Canvas glitter overlay */
+      #glitterCanvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .glitter-wrapper {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Message text */
+      .message-text {
+        font-size: 1.2em;
+        line-height: 1.8;
+        color: #2d3748;
+        text-align: center;
+        filter: blur(8px);
+        opacity: 0.3;
+        transition: all 0.6s ease;
+        cursor: pointer;
+        max-width: 420px;
+      }
+
+      .letter.revealed .message-text {
+        filter: blur(0);
+        opacity: 1;
+      }
+
+      .chinese {
+        font-family: "Microsoft YaHei", "PingFang SC", "SimHei", sans-serif;
+      }
+
+      /* Instructions */
+      .instructions {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: #8a9ba8;
+        font-size: 0.9em;
+        text-align: center;
+        opacity: 0.7;
+      }
+
+      /* Get New Letter Button */
+      .new-letter-btn {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 12px 30px;
+        background: #b9cbd9;
+        color: #4a5568;
+        border: none;
+        border-radius: 25px;
+        font-size: 0.9em;
+        cursor: pointer;
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.3s ease;
+      }
+
+      .new-letter-btn.show {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .new-letter-btn:hover {
+        background: #a7bccf;
+        transform: translateX(-50%) translateY(-2px);
+      }
+
+      /* Title */
+      h1 {
+        position: fixed;
+        top: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 2.2em;
+        color: #4a5568;
+        font-weight: 300;
+        text-align: center;
+      }
     </style>
-</head>
-<body>
-    <div class="container">
-        <h1 id="title">Gentle Rest</h1>
+  </head>
+  <body>
+    <h1>Gentle Rest</h1>
 
-        <div id="message-display">
-            <p id="message-text">Click below to receive a gentle message</p>
+    <div class="language-toggle" id="languageToggle">切換中文</div>
+
+    <div class="scene">
+      <div class="envelope" id="envelope">
+        <div class="envelope-body"></div>
+        <div class="envelope-flap"></div>
+        <div class="wax-seal" id="waxSeal"></div>
+
+        <div class="letter" id="letter">
+          <canvas id="glitterCanvas"></canvas>
+
+          <div class="glitter-wrapper">
+            <p class="message-text" id="messageText">
+              Click the wax seal to open
+            </p>
+          </div>
         </div>
-
-        <div class="button-group">
-            <button id="new-message-btn">New Message</button>
-            <button id="language-toggle">切換中文 / Switch to English</button>
-        </div>
-
-        <p class="footer">For anyone who needs a gentle pause 💙</p>
+      </div>
     </div>
 
+    <div class="instructions" id="instructions">
+      Click the wax seal to open your letter
+    </div>
+
+    <button class="new-letter-btn" id="newLetterBtn">Get New Letter</button>
+
     <script>
-        // ========== CONTEXT-FREE GRAMMAR ENGINE ==========
-        
-        class Grammar {
-            constructor(rules) {
-                this.rules = rules;
-            }
-
-            // Generate text from a symbol
-            generate(symbol) {
-                // If this symbol has rules, pick one randomly
-                if (this.rules[symbol]) {
-                    const options = this.rules[symbol];
-                    const chosen = options[Math.floor(Math.random() * options.length)];
-                    
-                    // Expand all parts of the chosen rule
-                    return chosen.split(' ').map(part => {
-                        // If it's a symbol (starts with <), expand it
-                        if (part.startsWith('<') && part.endsWith('>')) {
-                            return this.generate(part);
-                        }
-                        // Otherwise it's regular text
-                        return part;
-                    }).join(' ');
+      // ========= CONTEXT-FREE GRAMMAR =========
+      class Grammar {
+        constructor(rules) {
+          this.rules = rules;
+        }
+        generate(symbol) {
+          if (this.rules[symbol]) {
+            const options = this.rules[symbol];
+            const chosen =
+              options[Math.floor(Math.random() * options.length)];
+            return chosen
+              .split(" ")
+              .map((part) => {
+                if (part.startsWith("<") && part.endsWith(">")) {
+                  return this.generate(part);
                 }
-                
-                // If no rules, return the symbol as-is (shouldn't happen)
-                return symbol;
-            }
+                return part;
+              })
+              .join(" ");
+          }
+          return symbol;
+        }
+        generateMessage() {
+          return this.generate("<start>");
+        }
+      }
 
-            // Generate a complete message
-            generateMessage() {
-                return this.generate('<start>');
-            }
+      const englishGrammar = new Grammar({
+        "<start>": [
+          "<validation> <permission>",
+          "<validation> <rest>",
+          "<permission> <rest>",
+          "<validation> <permission> <rest>",
+          "<you> <permission>",
+          "<you> <rest>",
+        ],
+        "<validation>": [
+          "You are doing enough today.",
+          "Some days are harder than others.",
+          "Your efforts matter, even when invisible.",
+          "What you do is important.",
+          "You are allowed to feel tired.",
+          "Your feelings are valid.",
+          "This work takes so much from you.",
+        ],
+        "<permission>": [
+          "It is okay to rest.",
+          "You can pause without guilt.",
+          "Taking a break is not selfish.",
+          "You are allowed to say no sometimes.",
+          "Rest is not weakness.",
+          "You deserve gentleness too.",
+          "It is okay to ask for help.",
+          "You do not have to be perfect.",
+        ],
+        "<rest>": [
+          "Rest is part of the work.",
+          "Small pauses count as care.",
+          "Even five minutes matters.",
+          "Rest helps you continue.",
+          "Resting is not giving up.",
+          "You can care for yourself while caring for others.",
+          "Tomorrow you can try again.",
+          "This moment of rest is yours.",
+        ],
+        "<you>": [
+          "You are seen.",
+          "You are not alone in this.",
+          "You are doing your best.",
+          "You matter.",
+          "You are worthy of care.",
+          "You are enough.",
+        ],
+      });
+
+      const chineseGrammar = new Grammar({
+        "<start>": [
+          "<validation> <permission>",
+          "<validation> <rest>",
+          "<permission> <rest>",
+          "<validation> <permission> <rest>",
+          "<you> <permission>",
+          "<you> <rest>",
+        ],
+        "<validation>": [
+          "今天的你已經很努力了。",
+          "有些日子就是比較難。",
+          "你的付出很重要，即使沒有人看見。",
+          "你做的事情很有意義。",
+          "累了是正常的。",
+          "你的感受是真實的。",
+          "這份工作真的很辛苦。",
+        ],
+        "<permission>": [
+          "休息是可以的。",
+          "暫停不需要感到愧疚。",
+          "休息不是自私。",
+          "你可以偶爾說不。",
+          "休息不是軟弱。",
+          "你也值得被溫柔對待。",
+          "尋求幫助是可以的。",
+          "你不需要完美。",
+        ],
+        "<rest>": [
+          "休息也是照顧的一部分。",
+          "小小的暫停也算是照顧自己。",
+          "就算只有五分鐘也很重要。",
+          "休息讓你可以繼續下去。",
+          "休息不是放棄。",
+          "你可以在照顧別人的同時照顧自己。",
+          "明天可以再試試看。",
+          "這個休息的時刻屬於你。",
+        ],
+        "<you>": [
+          "有人看見你的付出。",
+          "你不是一個人。",
+          "你已經盡力了。",
+          "你很重要。",
+          "你值得被照顧。",
+          "你就是夠好的。",
+        ],
+      });
+
+      let currentLanguage = "english";
+      let currentGrammar = englishGrammar;
+      let isEnvelopeOpened = false;
+
+      const envelope = document.getElementById("envelope");
+      const waxSeal = document.getElementById("waxSeal");
+      const letter = document.getElementById("letter");
+      const messageText = document.getElementById("messageText");
+      const languageToggle = document.getElementById("languageToggle");
+      const instructions = document.getElementById("instructions");
+      const newLetterBtn = document.getElementById("newLetterBtn");
+
+      function openEnvelope() {
+        if (!isEnvelopeOpened) {
+          envelope.classList.add("opened");
+          isEnvelopeOpened = true;
+
+          const message = currentGrammar.generateMessage();
+          messageText.textContent = message;
+
+          if (currentLanguage === "chinese") {
+            messageText.classList.add("chinese");
+          } else {
+            messageText.classList.remove("chinese");
+          }
+
+          setTimeout(() => {
+            instructions.textContent = "Click the text to reveal the message";
+          }, 800);
+
+          setTimeout(() => {
+            newLetterBtn.classList.add("show");
+          }, 1500);
+        }
+      }
+
+      function getNewLetter() {
+        envelope.classList.remove("opened");
+        isEnvelopeOpened = false;
+        newLetterBtn.classList.remove("show");
+        letter.classList.remove("revealed");
+
+        showGlitter = true;
+
+        if (currentLanguage === "english") {
+          instructions.textContent = "Click the wax seal to open your letter";
+        } else {
+          instructions.textContent = "點擊蠟封打開信件";
         }
 
-        // ========== ENGLISH GRAMMAR ==========
-        
-        const englishGrammar = new Grammar({
-            '<start>': [
-                '<validation> <permission>',
-                '<validation> <rest>',
-                '<permission> <rest>',
-                '<validation> <permission> <rest>',
-                '<you> <permission>',
-                '<you> <rest>',
-            ],
-            
-            '<validation>': [
-                'You are doing enough today.',
-                'Some days are harder than others.',
-                'Your efforts matter, even when invisible.',
-                'Caregiving is profound work.',
-                'What you do is important.',
-                'You are allowed to feel tired.',
-                'Your feelings are valid.',
-                'This work takes so much from you.',
-            ],
-            
-            '<permission>': [
-                'It is okay to rest.',
-                'You can pause without guilt.',
-                'Taking a break is not selfish.',
-                'You are allowed to say no sometimes.',
-                'Rest is not weakness.',
-                'You deserve gentleness too.',
-                'It is okay to ask for help.',
-                'You do not have to be perfect.',
-            ],
-            
-            '<rest>': [
-                'Rest is part of the work.',
-                'Small pauses count as care.',
-                'Even five minutes matters.',
-                'Rest helps you continue.',
-                'Resting is not giving up.',
-                'You can care for yourself while caring for others.',
-                'Tomorrow you can try again.',
-                'This moment of rest is yours.',
-            ],
-            
-            '<you>': [
-                'You are seen.',
-                'You are not alone in this.',
-                'You are doing your best.',
-                'You matter.',
-                'You are worthy of care.',
-                'You are enough.',
-            ]
-        });
+        const message = currentGrammar.generateMessage();
+        messageText.textContent = message;
+      }
 
-        // ========== CHINESE GRAMMAR ==========
-        
-        const chineseGrammar = new Grammar({
-            '<start>': [
-                '<validation> <permission>',
-                '<validation> <rest>',
-                '<permission> <rest>',
-                '<validation> <permission> <rest>',
-                '<you> <permission>',
-                '<you> <rest>',
-            ],
-            
-            '<validation>': [
-                '今天的你已經很努力了。',
-                '有些日子就是比較難。',
-                '你的付出很重要，即使沒有人看見。',
-                '照顧是很深刻的工作。',
-                '你做的事情很有意義。',
-                '累了是正常的。',
-                '你的感受是真實的。',
-                '這份工作真的很辛苦。',
-            ],
-            
-            '<permission>': [
-                '休息是可以的。',
-                '暫停不需要感到愧疚。',
-                '休息不是自私。',
-                '你可以偶爾說不。',
-                '休息不是軟弱。',
-                '你也值得被溫柔對待。',
-                '尋求幫助是可以的。',
-                '你不需要完美。',
-            ],
-            
-            '<rest>': [
-                '休息也是照顧的一部分。',
-                '小小的暫停也算是照顧自己。',
-                '就算只有五分鐘也很重要。',
-                '休息讓你可以繼續下去。',
-                '休息不是放棄。',
-                '你可以在照顧別人的同時照顧自己。',
-                '明天可以再試試看。',
-                '這個休息的時刻屬於你。',
-            ],
-            
-            '<you>': [
-                '有人看見你的付出。',
-                '你不是一個人。',
-                '你已經盡力了。',
-                '你很重要。',
-                '你值得被照顧。',
-                '你就是夠好的。',
-            ]
-        });
-
-        // ========== APPLICATION STATE ==========
-        
-        let currentLanguage = 'english'; // or 'chinese'
-        let currentGrammar = englishGrammar;
-
-        // ========== DOM ELEMENTS ==========
-        
-        const messageText = document.getElementById('message-text');
-        const newMessageBtn = document.getElementById('new-message-btn');
-        const languageToggle = document.getElementById('language-toggle');
-        const title = document.getElementById('title');
-        const messageDisplay = document.getElementById('message-display');
-
-        // ========== FUNCTIONS ==========
-        
-        function displayMessage() {
-            // Generate new message
-            const message = currentGrammar.generateMessage();
-            
-            // Add fade-in animation
-            messageDisplay.classList.remove('fade-in');
-            void messageDisplay.offsetWidth; // Trigger reflow
-            messageDisplay.classList.add('fade-in');
-            
-            // Update text and language class
-            messageText.textContent = message;
-            if (currentLanguage === 'chinese') {
-                messageText.classList.add('chinese');
-            } else {
-                messageText.classList.remove('chinese');
-            }
+      function toggleLanguage() {
+        if (currentLanguage === "english") {
+          currentLanguage = "chinese";
+          currentGrammar = chineseGrammar;
+          languageToggle.textContent = "Switch to English";
+          instructions.textContent = "點擊蠟封打開信件";
+        } else {
+          currentLanguage = "english";
+          currentGrammar = englishGrammar;
+          languageToggle.textContent = "切換中文";
+          instructions.textContent = "Click the wax seal to open your letter";
         }
 
-        function toggleLanguage() {
-            if (currentLanguage === 'english') {
-                // Switch to Chinese
-                currentLanguage = 'chinese';
-                currentGrammar = chineseGrammar;
-                languageToggle.textContent = 'Switch to English';
-            } else {
-                // Switch to English
-                currentLanguage = 'english';
-                currentGrammar = englishGrammar;
-                languageToggle.textContent = '切換中文';
+        if (isEnvelopeOpened) {
+          const message = currentGrammar.generateMessage();
+          messageText.textContent = message;
+
+          if (currentLanguage === "chinese") {
+            messageText.classList.add("chinese");
+            instructions.textContent = "點擊文字顯示訊息";
+          } else {
+            messageText.classList.remove("chinese");
+            instructions.textContent = "Click the text to reveal the message";
+          }
+        }
+      }
+
+      // Click on text reveals it AND stops glitter
+      messageText.addEventListener("click", (e) => {
+        e.stopPropagation(); // Don't trigger letter click
+        letter.classList.add("revealed");
+        showGlitter = false;
+        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+      });
+
+      // Click on letter (but not text) only reveals, glitter continues
+      letter.addEventListener("click", () => {
+        letter.classList.add("revealed");
+        // Note: glitter keeps going! Only stops when clicking text
+      });
+
+      waxSeal.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openEnvelope();
+      });
+
+      envelope.addEventListener("click", () => {
+        if (!isEnvelopeOpened) {
+          openEnvelope();
+        }
+      });
+
+      languageToggle.addEventListener("click", toggleLanguage);
+      newLetterBtn.addEventListener("click", getNewLetter);
+
+      // ========= PARTICLE GLITTER =========
+      const glitterCanvas = document.getElementById("glitterCanvas");
+      const ctx = glitterCanvas.getContext("2d");
+
+      let particles = [];
+      let emitters = [];
+      let forces = [];
+      let collidedMass = 0;
+      let drawScale = 1;
+      let maxParticles = 180; // Reduced from 300
+      let emissionRate = 1; // Back to 1 to reduce load
+      let canvasWidth = 0;
+      let canvasHeight = 0;
+      let showGlitter = true;
+
+      const cos = Math.cos,
+        sin = Math.sin,
+        sqrt = Math.sqrt,
+        abs = Math.abs,
+        atan2 = Math.atan2,
+        random = Math.random,
+        PI = Math.PI;
+      const sqr = (v) => v * v;
+
+      function Vector(x, y, z) {
+        this.x = x || 0;
+        this.y = y || 0;
+        this.z = z || 0;
+      }
+      Vector.prototype = {
+        add: function (vector) {
+          this.x += vector.x;
+          this.y += vector.y;
+          this.z += vector.z;
+          return this;
+        },
+        scale: function (factor) {
+          this.x *= factor;
+          this.y *= factor;
+          this.z *= factor;
+          return this;
+        },
+        magnitude: function () {
+          return sqrt(sqr(this.x + this.y));
+        },
+        distance: function (another) {
+          return abs(
+            sqrt(sqr(this.x - another.x) + sqr(this.y - another.y))
+          );
+        },
+        angle: function (angle, magnitude) {
+          if (angle && magnitude) return Vector.fromAngle(angle, magnitude);
+          return atan2(this.y, this.x);
+        },
+        clone: function () {
+          return new Vector(this.x, this.y, this.z);
+        },
+        random: function (r) {
+          this.x += random() * r * 2 - r;
+          this.y += random() * r * 2 - r;
+          return this;
+        },
+      };
+      Vector.fromAngle = function (angle, magnitude) {
+        return new Vector(
+          magnitude * cos(angle),
+          magnitude * sin(angle),
+          magnitude * sin(angle)
+        );
+      };
+
+      function Particle(pt, vc, ac, mass) {
+        this.pos = pt || new Vector(0, 0);
+        this.vc = vc || new Vector(0, 0);
+        this.ac = ac || new Vector(0, 0);
+        this.mass = mass || 1;
+        this.alive = true;
+      }
+      Particle.prototype.move = function () {
+        this.vc.add(this.ac);
+        this.pos.add(this.vc);
+      };
+      Particle.prototype.reactToForces = function (fields) {
+        let totalAccelerationX = 0;
+        let totalAccelerationY = 0;
+
+        for (let i = 0; i < fields.length; i++) {
+          const field = fields[i];
+          const vectorX = field.pos.x - this.pos.x;
+          const vectorY = field.pos.y - this.pos.y;
+          const distance = this.pos.distance(field.pos);
+          const force = G(this.forceBetween(field, distance));
+          totalAccelerationX += vectorX * force;
+          totalAccelerationY += vectorY * force;
+        }
+        this.ac = new Vector(totalAccelerationX, totalAccelerationY);
+      };
+      Particle.prototype.forceBetween = function (another, distance) {
+        const d = distance ? distance : this.pos.distance(another.pos);
+        return (this.mass * another.mass) / sqr(d);
+      };
+
+      function ParticleEmitter(pos, vc, ang) {
+        this.pos = pos;
+        this.vc = vc;
+        this.ang = ang || 0.09;
+      }
+      ParticleEmitter.prototype.emit = function () {
+        const angle =
+          this.vc.angle() + this.ang - random() * this.ang * 2;
+        const magnitude = this.vc.magnitude();
+        const position = this.pos.clone();
+        position.add(
+          new Vector(
+            ((random() * 120 - 60) * drawScale) / 2,
+            ((random() * 120 - 60) * drawScale) / 2
+          )
+        );
+        const velocity = Vector.fromAngle(angle, magnitude);
+        return new Particle(position, velocity);
+      };
+
+      function Force(pos, m) {
+        this.pos = pos;
+        this.mass = m || 120;
+      }
+
+      function G(data) {
+        return 0.004 * data;
+      }
+
+      function renderToCanvas(width, height, renderFunction) {
+        const buffer = document.createElement("canvas");
+        buffer.width = width;
+        buffer.height = height;
+        renderFunction(buffer.getContext("2d"));
+        return buffer;
+      }
+
+      let minParticleSize = 1.0; // Slightly smaller
+      let ctr = 0;
+      const colors = [
+        "rgba(255,255,255,",
+        "rgba(150,190,255,",
+        "rgba(255,255,190,",
+      ];
+      function rndc() {
+        return colors[~~(Math.random() * colors.length)];
+      }
+      const c2 = "rgba(255,120,80,";
+
+      function addNewParticles() {
+        if (!showGlitter) return;
+        const _emit = () => {
+          let ret = 0;
+          for (let i = 0; i < emitters.length; i++) {
+            for (let j = 0; j < emissionRate; j++) {
+              const p = emitters[i].emit();
+              p.color =
+                ctr % 12 === 0
+                  ? random() * 5 <= 1
+                    ? c2
+                    : rndc()
+                  : rndc();
+              p.mass = 1.0 + random() * 1.5; // Smaller range
+              particles.push(p);
+              ret += p.mass;
+              ctr++;
             }
-            
-            // Generate a new message in the new language
-            displayMessage();
+          }
+          return ret;
+        };
+
+        if (collidedMass !== 0) {
+          while (collidedMass !== 0) {
+            collidedMass -= _emit();
+            collidedMass = collidedMass < 0 ? 0 : collidedMass;
+          }
+        }
+        if (particles.length > maxParticles) return;
+        _emit();
+      }
+
+      function plotParticles() {
+        const currentParticles = [];
+        for (let i = 0; i < particles.length; i++) {
+          const particle = particles[i];
+          particle.reactToForces(forces);
+          particle.move();
+          if (
+            particle.pos.x < -40 ||
+            particle.pos.x > canvasWidth + 40 ||
+            particle.pos.y < -40 ||
+            particle.pos.y > canvasHeight + 40
+          ) {
+            continue;
+          }
+          currentParticles.push(particle);
+        }
+        particles = currentParticles;
+      }
+
+      const offscreenCache = {};
+      function renderParticle(p) {
+        if (!p.size) p.size = p.mass * 0.5; // Slightly bigger render
+        if (!p.opacity) p.opacity = 0.35; // Start more visible
+
+        p.opacity += (Math.random() - 0.5) * 0.08;
+        if (p.opacity < 0.2) p.opacity = 0.2; // Minimum more visible
+        if (p.opacity > 0.7) p.opacity = 0.7; // Maximum brighter
+
+        let actualSize = p.size / drawScale;
+        if (actualSize < minParticleSize) actualSize = minParticleSize;
+
+        const cacheKey = actualSize + "_" + p.opacity + "_" + p.color;
+        let cacheValue = offscreenCache[cacheKey];
+        if (!cacheValue) {
+          cacheValue = renderToCanvas(
+            actualSize * 16,
+            actualSize * 16,
+            function (ofsContext) {
+              // Simplified to 2 layers instead of 3 for better performance
+              const fills = [
+                { size: actualSize * 0.5, opacity: 1 },
+                { size: actualSize * 1.5, opacity: p.opacity / 2 },
+              ];
+              ofsContext.beginPath();
+              for (let f of fills) {
+                ofsContext.fillStyle = p.color + f.opacity + ")";
+                ofsContext.arc(
+                  actualSize * 8,
+                  actualSize * 8,
+                  f.size,
+                  0,
+                  Math.PI * 2,
+                  true
+                );
+                ofsContext.fill();
+              }
+              ofsContext.closePath();
+            }
+          );
+          offscreenCache[cacheKey] = cacheValue;
         }
 
-        // ========== EVENT LISTENERS ==========
-        
-        newMessageBtn.addEventListener('click', displayMessage);
-        languageToggle.addEventListener('click', toggleLanguage);
+        const posX = p.pos.x / drawScale;
+        const posY = p.pos.y / drawScale;
+        ctx.drawImage(cacheValue, posX, posY);
+      }
 
-        // Optional: Generate first message on load
-        // displayMessage();
+      function renderScene() {
+        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+        if (!showGlitter) return;
+        for (let p of particles) renderParticle(p);
+      }
+
+      function loop() {
+        addNewParticles();
+        plotParticles();
+        renderScene();
+        requestAnimationFrame(loop);
+      }
+
+      function setupParticles() {
+        const rect = letter.getBoundingClientRect();
+        glitterCanvas.width = rect.width;
+        glitterCanvas.height = rect.height;
+        canvasWidth = glitterCanvas.width;
+        canvasHeight = glitterCanvas.height;
+
+        particles = [];
+        // 6 emitters - enough coverage without lag
+        emitters = [
+          // Top
+          new ParticleEmitter(
+            new Vector(canvasWidth * 0.3, 30),
+            Vector.fromAngle(1.5, 0.6),
+            1.5
+          ),
+          new ParticleEmitter(
+            new Vector(canvasWidth * 0.7, 30),
+            Vector.fromAngle(1.5, 0.6),
+            1.5
+          ),
+          // Middle
+          new ParticleEmitter(
+            new Vector(30, canvasHeight / 2),
+            Vector.fromAngle(0, 0.6),
+            1.5
+          ),
+          new ParticleEmitter(
+            new Vector(canvasWidth - 30, canvasHeight / 2),
+            Vector.fromAngle(3.14, 0.6),
+            1.5
+          ),
+          // Bottom
+          new ParticleEmitter(
+            new Vector(canvasWidth * 0.3, canvasHeight - 30),
+            Vector.fromAngle(4.7, 0.6),
+            1.5
+          ),
+          new ParticleEmitter(
+            new Vector(canvasWidth * 0.7, canvasHeight - 30),
+            Vector.fromAngle(4.7, 0.6),
+            1.5
+          ),
+        ];
+
+        forces = [
+          new Force(new Vector(canvasWidth / 2, canvasHeight / 2), 220),
+        ];
+      }
+
+      window.addEventListener("load", () => {
+        setupParticles();
+        loop();
+      });
+      window.addEventListener("resize", () => {
+        setupParticles();
+      });
     </script>
-</body>
+  </body>
 </html>
